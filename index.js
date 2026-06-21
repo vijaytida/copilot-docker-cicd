@@ -1,10 +1,10 @@
-// simple app which listens on port 3000 and responds with "Hello World!" to all requests use express()
+// Simple HTTP server that listens on port 3000 and responds with "Hello World!"
 const http = require('http');
-const app = http();
 const port = 3000;
-app.get('*', (req, res) => {
-  res.send('Hello World! from Docker CI/CD pipeline');
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello World! from Docker CI/CD pipeline');
 });
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
