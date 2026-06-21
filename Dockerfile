@@ -33,14 +33,22 @@ WORKDIR /usr/src/app
 
 # Copy only what we need from builder: package metadata, node_modules, and built/source files
 COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+# Copy built/source files (builder may have run a build)
 COPY --from=builder /usr/src/app .
+
+# Install production dependencies in runner to avoid copying node_modules
+ENV NODE_ENV=production
+RUN if [ -f package-lock.json ]; then \
+			npm ci --only=production; \
+		elif [ -f package.json ]; then \
+			npm install --only=production; \
+		else \
+			echo "No package.json found, skipping npm install"; \
+		fi
 
 # Drop root privileges where possible
 RUN if id node >/dev/null 2>&1; then chown -R node:node /usr/src/app; fi
 USER node
-
-ENV NODE_ENV=production
 EXPOSE 3000
 
 # Healthcheck (optional; adjust path as needed)
