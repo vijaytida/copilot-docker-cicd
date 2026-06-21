@@ -15,6 +15,9 @@ RUN if [ -f package-lock.json ]; then \
 			echo "No package.json found, skipping npm install"; \
 		fi
 
+# Ensure `node_modules` directory exists so later COPY doesn't fail
+RUN mkdir -p node_modules
+
 # Copy source and run build if script exists
 COPY . .
 RUN if [ -f package.json ] && grep -q "\"build\"" package.json 2>/dev/null; then \
