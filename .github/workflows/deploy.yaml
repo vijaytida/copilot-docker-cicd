@@ -1,4 +1,6 @@
 name: Build and Push Docker Image
+# add trigger manually to run the workflow
+
 on:
   push:
     branches:
@@ -11,6 +13,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Validate Docker Hub secrets
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ] || [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
+            echo "ERROR: DOCKER_USERNAME or DOCKER_PASSWORD secret is not set. Add them in repository Settings → Secrets → Actions." >&2
+            exit 1
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
